@@ -1,5 +1,6 @@
 package com.example.onlineshop.data.api
 
+import com.example.onlineshop.data.api.dto.FoodDTO
 import com.example.onlineshop.data.api.dto.ResponseDTO
 import com.example.onlineshop.data.api.dto.UserDTO
 import retrofit2.Call
@@ -10,7 +11,7 @@ import retrofit2.http.POST
 interface ApiService {
 
     @GET("product")
-    fun getProducts(): Call<ResponseDTO<List<UserDTO>>>
+    fun getProducts(): Call<ResponseDTO<List<FoodDTO>>>
 
     @POST("user/sign-in")
     fun signIn(@Body body: HashMap<String, Any>): Call<ResponseDTO<UserDTO>>

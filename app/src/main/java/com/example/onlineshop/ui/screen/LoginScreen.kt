@@ -24,13 +24,12 @@ import com.example.onlineshop.ui.component.MyButton
 import com.example.onlineshop.ui.component.MyTextField
 import com.example.onlineshop.ui.component.NormalTextComponent
 import com.example.onlineshop.ui.component.PasswordTextField
-import com.example.onlineshop.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    loginViewModel: LoginViewModel
+    navController: NavController
 ) {
+//    val viewModel: LoginViewModel = viewModel()
     val myBrush = Brush.verticalGradient(
         listOf(
             Color(0xFFf9f7ea),
@@ -61,8 +60,8 @@ fun LoginScreen(
                 value = "Welcome Back", modifier = Modifier.fillMaxWidth()
             )
 
-            val email = remember { mutableStateOf("dasdfasfdasdp@sfl.com") }
-            val password = remember { mutableStateOf("000000000000") }
+            val email = remember { mutableStateOf("dinh.phuc.17.5.25@gmail.com") }
+            val password = remember { mutableStateOf("00000000") }
 
             MyTextField(
                 valueLabel = "Email",
@@ -80,11 +79,18 @@ fun LoginScreen(
                     .fillMaxWidth(),
                 text = "Login",
             ) {
-                navController.navigate("main")
-//                loginViewModel.login(
+//                viewModel.login(
 //                    email = email.value,
-//                    password = password.value
+//                    password = password.value,
+//                    onListenResponse = object : OnListenResponse<String> {
+//                        override fun onSuccess(data: String?) {
+//                            navController.navigate("main")
+//                        }
+//
+//                        override fun onFail(error: String) {}
+//                    }
 //                )
+//            }
             }
         }
     }
@@ -93,5 +99,5 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(NavController(context = LocalContext.current),LoginViewModel())
+    LoginScreen(NavController(context = LocalContext.current))
 }

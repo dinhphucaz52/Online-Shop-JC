@@ -47,7 +47,9 @@ fun NormalTextComponent(
     value: String, modifier: Modifier
 ) {
     Text(
-        text = value, modifier = modifier.heightIn(min = 40.dp), style = TextStyle(
+        text = value, modifier = modifier
+            .heightIn(min = 40.dp),
+        style = TextStyle(
             fontSize = 18.sp, fontWeight = FontWeight.Normal, fontStyle = FontStyle.Normal
         ), color = TextColor, textAlign = TextAlign.Center
     )
