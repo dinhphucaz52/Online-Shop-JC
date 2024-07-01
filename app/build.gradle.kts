@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 
-//    id("com.google.dagger.hilt.android")
-//    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -89,7 +89,7 @@ dependencies {
 
     // View model
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     //Constraint Layout
     implementation(libs.androidx.constraintlayout.compose)
@@ -101,10 +101,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
+
     //Coil
-    implementation("io.coil-kt:coil-compose:2.0.0")
+    implementation(libs.coil.compose)
 
     //Dagger and Hilt
-//    implementation("com.google.dagger:hilt-android:2.44")
-//    ksp("com.google.dagger:hilt-compiler:2.44")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    //
+    implementation(libs.accompanist.pager)
 }
