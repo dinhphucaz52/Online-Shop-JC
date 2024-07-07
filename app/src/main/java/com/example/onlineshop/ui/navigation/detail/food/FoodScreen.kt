@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.sharp.Casino
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -29,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +50,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DetailScreen(
-    food: Food?, viewModel: FoodViewModel
+    food: Food, viewModel: FoodViewModel,
+    foodList: List<Food>
 ) {
 
     var foodState by remember {
@@ -58,7 +62,14 @@ fun DetailScreen(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .background(
+                color = DarkColorScheme.background
+            )
     ) {
+
+        var listUrlState by remember {
+            mutableStateOf(foodState.getAllImg())
+        }
 
 
         val lazyRow = createRef()
@@ -66,10 +77,25 @@ fun DetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
+                .background(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                    ),
+                    shape = RoundedCornerShape(bottomEnd = 30.dp, bottomStart = 30.dp)
+                )
                 .clip(RoundedCornerShape(bottomEnd = 30.dp, bottomStart = 30.dp))
                 .constrainAs(lazyRow) {
                     top.linkTo(parent.top)
-                }, listUrl = FakeData.LIST_IMG_URL
+                }, listUrl = listUrlState
         )
 
         val box = createRef()
@@ -94,7 +120,7 @@ fun DetailScreen(
         }
 
         val text = createRef()
-        Text(text = foodState?.name.toString(),
+        Text(text = foodState.name.ifBlank { "Undefined" },
             textAlign = TextAlign.Start,
             fontSize = 16.sp,
             color = DarkColorScheme.tertiary,
@@ -119,7 +145,7 @@ fun DetailScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = "$${food?.price ?: "null"}",
+                text = "$${foodState.price}",
                 textAlign = TextAlign.Start,
                 fontSize = 50.sp,
                 color = DarkColorScheme.tertiary,
@@ -136,7 +162,7 @@ fun DetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
+                    imageVector = Icons.Sharp.Casino,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(3.dp)
@@ -145,7 +171,7 @@ fun DetailScreen(
                 )
             }
             Text(
-                text = foodState?.quantity.toString(),
+                text = foodState.quantity.toString(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 15.dp),
                 fontSize = 30.sp,
@@ -183,7 +209,7 @@ fun DetailScreen(
                 })
 
         val text3 = createRef()
-        Text(text = foodState?.address.toString(), maxLines = 1,
+        Text(text = foodState.address.ifBlank { "Undefined" }, maxLines = 1,
             fontSize = 16.sp,
             modifier = Modifier
                 .padding(start = 20.dp, end = 20.dp, top = 20.dp)
@@ -226,9 +252,10 @@ fun DetailScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
 
-            itemsIndexed(FakeData.FOOD_LIST) { indexed, food ->
+            itemsIndexed(foodList) { indexed, food ->
                 FoodItem(food = food, indexed) {
                     foodState = food
+                    listUrlState = food.getAllImg()
                 }
             }
         }
@@ -239,8 +266,6 @@ fun DetailScreen(
 @Composable
 fun DetailScreenPreview() {
     DetailScreen(
-        Food(
-            "NULL", "NULL", "NULL", 0, FakeData.IMG_TEST_URL, quantity = 0, listOf()
-        ), viewModel = FoodViewModel()
+        Food(), viewModel = FoodViewModel(), FakeData.FOOD_LIST
     )
 }

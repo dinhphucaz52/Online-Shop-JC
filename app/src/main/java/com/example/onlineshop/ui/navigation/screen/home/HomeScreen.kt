@@ -22,13 +22,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -58,9 +58,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 
 private const val TAG = "System.out"
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit)?) {
+fun HomeScreen(homeViewModel: HomeViewModel, navigateToDetail: ((Food?, List<Food>?) -> Unit)?) {
 
     ConstraintLayout(
         modifier = Modifier
@@ -200,11 +200,30 @@ fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit
             })
 
         val bannerSlider = createRef()
+
+        val bannerList = homeViewModel.foodListState.collectAsState().value?.map {
+            it.img
+        }
+
         BannerSlider(
             Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp)
                 .height(150.dp)
+                .background(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                    )
+                )
                 .constrainAs(bannerSlider) {
                     top.linkTo(background.bottom)
                     start.linkTo(parent.start)
@@ -212,20 +231,22 @@ fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit
                 },
             contentPaddingValues = 10,
             itemSpacing = 10,
-            listUrl = FakeData.LIST_IMG_URL
+            listUrl = bannerList ?: emptyList()
         )
 
         val text2 = createRef()
         Text(text = "FOR YOU",
             fontSize = 16.sp,
             fontFamily = FontFamily.Cursive,
-            modifier = Modifier.constrainAs(
-                text2
-            ) {
-                top.linkTo(bannerSlider.bottom, margin = 20.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            })
+            modifier = Modifier
+                .constrainAs(
+                    text2
+                ) {
+                    top.linkTo(bannerSlider.bottom, margin = 20.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
 
         Canvas(
             Modifier
@@ -324,6 +345,8 @@ fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit
         }
 
         val lazyColumn = createRef()
+        val foodList = homeViewModel.foodListState.collectAsState()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -335,11 +358,14 @@ fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit
                 },
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            val list: List<Food> = foodList.value?.toList() ?: FakeData.FOOD_LIST
 
-            itemsIndexed(FakeData.FOOD_LIST) { indexed, food ->
+            println(list)
+
+            itemsIndexed(list) { indexed, food ->
                 FoodItem(food = food, indexed) {
                     navigateToDetail
-                        ?.invoke(food)
+                        ?.invoke(food, list)
                 }
             }
         }
@@ -349,5 +375,5 @@ fun HomeScreen(homeViewModel: HomeViewModel?, navigateToDetail: ((Food?) -> Unit
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeScreen(null, null)
+    HomeScreen(HomeViewModel(), null)
 }

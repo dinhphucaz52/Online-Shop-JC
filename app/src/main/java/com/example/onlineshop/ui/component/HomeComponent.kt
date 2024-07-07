@@ -18,22 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.More
-import androidx.compose.material.icons.filled.DinnerDining
-import androidx.compose.material.icons.filled.Fastfood
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.LocalPizza
-import androidx.compose.material.icons.filled.NoFood
-import androidx.compose.material.icons.filled.PropaneTank
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Divider
@@ -49,6 +37,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -63,40 +53,12 @@ import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberAsyncImagePainter
 import com.example.onlineshop.R
 import com.example.onlineshop.domain.model.Food
-import com.example.onlineshop.ui.navigation.screen.home.HomeViewModel
 import com.example.onlineshop.ui.theme.DarkColorScheme
 import com.example.onlineshop.utils.FakeData
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-
-@Composable
-fun Header(
-    modifier: Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val iconModifier = Modifier
-            .fillMaxHeight()
-            .aspectRatio(1f)
-        Icon(Icons.Default.History, null, iconModifier, DarkColorScheme.primary)
-        Text(
-            text = "Home",
-            fontSize = 50.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            color = DarkColorScheme.primary
-        )
-        Icon(Icons.Filled.ShoppingCart, null, iconModifier, DarkColorScheme.primary)
-    }
-}
 
 @Composable
 fun Item(painterResource: ImageVector, colorBackground: Color, modifier: Modifier) {
@@ -119,95 +81,50 @@ fun Item(painterResource: ImageVector, colorBackground: Color, modifier: Modifie
 }
 
 @Composable
-fun Category(
-    modifier: Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-        ) {
-            Item(
-                painterResource = Icons.Filled.FreeBreakfast,
-                colorBackground = Color(0xFFf36186),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.Filled.Fastfood,
-                colorBackground = Color(0xFFad74da),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.Filled.DinnerDining,
-                colorBackground = Color(0xFFff9888),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.Filled.LocalPizza,
-                colorBackground = Color(0xFF5ecd93),
-                Modifier.weight(1f)
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-        ) {
-            Item(
-                painterResource = Icons.Filled.FavoriteBorder,
-                colorBackground = Color(0xFFa078ea),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.Filled.NoFood,
-                colorBackground = Color(0xFF8ed6ef),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.Filled.PropaneTank,
-                colorBackground = Color(0xFF9893e4),
-                Modifier.weight(1f)
-            )
-            Item(
-                painterResource = Icons.AutoMirrored.Filled.More,
-                colorBackground = Color(0xFFc471f3),
-                Modifier.weight(1f)
-            )
-        }
-    }
-
-}
-
-@Composable
 fun FoodItem(
     food: Food, indexed: Int, onclick: () -> Unit
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .background(DarkColorScheme.background)
-            .fillMaxWidth()
-            .border(
-                width = 2.dp, color = Color(0xFFff942b), shape = RoundedCornerShape(20.dp)
-            )
-            .height(150.dp)
-            .padding(10.dp)
-            .clickable { onclick() }
-    ) {
+    ConstraintLayout(modifier = Modifier
+        .background(DarkColorScheme.background)
+        .fillMaxWidth()
+        .border(
+            width = 2.dp, color = Color(0xFFff942b), shape = RoundedCornerShape(20.dp)
+        )
+        .height(150.dp)
+        .padding(10.dp)
+        .clickable { onclick() }) {
         val image = createRef()
-        Image(painter = painterResource(id = R.drawable.food),
-            contentDescription = null,
+        Box(
             modifier = Modifier
+                .background(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                            Color(0xFF3D3D3C),
+                            Color(0xFF2B2A29),
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                    ), shape = RoundedCornerShape(10.dp)
+                )
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(10.dp))
                 .aspectRatio(1f)
                 .constrainAs(image) {
                     end.linkTo(parent.end)
-                })
+                }, contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(food.img),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
 
         val icon = createRef()
         Image(painter = painterResource(id = R.drawable.ic),
@@ -274,29 +191,6 @@ fun FoodItem(
     }
 }
 
-@Composable
-fun RecyclerView(
-    viewModel: HomeViewModel?, modifier: Modifier, onclick: (Int) -> Unit
-) {
-    val listFood = viewModel?.foodListState?.value
-    LazyVerticalGrid(
-        modifier = modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(10.dp)),
-        columns = GridCells.Fixed(3),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(10.dp)
-    ) {
-        itemsIndexed(listFood ?: emptyList()) { indexed, food ->
-            FoodItem(food = food, indexed) {
-                onclick(indexed)
-            }
-        }
-    }
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MySearchBar(
@@ -345,8 +239,7 @@ fun MySearchBar(
 fun SearchBarPreview(
 ) {
     MySearchBar(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -354,10 +247,7 @@ fun SearchBarPreview(
 @ExperimentalPagerApi
 @Composable
 fun BannerSlider(
-    modifier: Modifier,
-    listUrl: List<String>,
-    itemSpacing: Int = 0,
-    contentPaddingValues: Int = 0
+    modifier: Modifier, listUrl: List<String>, itemSpacing: Int = 0, contentPaddingValues: Int = 0
 ) {
     val pagerState = rememberPagerState()
 

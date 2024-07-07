@@ -1,12 +1,13 @@
 package com.example.onlineshop.ui.navigation.screen.home
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.onlineshop.data.repository.HomeRepositoryImpl
 import com.example.onlineshop.domain.model.Food
 import com.example.onlineshop.domain.repository.HomeRepository
+import com.example.onlineshop.utils.AppConstants
 import com.example.onlineshop.utils.AppResource
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
@@ -14,11 +15,12 @@ class HomeViewModel : ViewModel() {
 
     fun setRepository(repository: HomeRepositoryImpl) {
         this.homeRepository = repository
+        getProducts()
     }
 
-    val foodListState = mutableStateOf<List<Food>?>(null)
+    val foodListState = MutableStateFlow<List<Food>?>(null)
 
-    fun getProducts() {
+    private fun getProducts() {
         viewModelScope.launch {
             when (val result = homeRepository.getFoods()) {
                 is AppResource.Success -> {
@@ -32,9 +34,11 @@ class HomeViewModel : ViewModel() {
                                 foodDTO.name,
                                 foodDTO.address,
                                 foodDTO.price,
-                                foodDTO.img,
+                                AppConstants.BASE_URL + foodDTO.img,
                                 foodDTO.quantity,
-                                foodDTO.gallery
+                                foodDTO.gallery.map {
+                                    AppConstants.BASE_URL + it
+                                }
                             )
                         }
                         foodListState.value = foodList

@@ -1,5 +1,6 @@
 package com.example.onlineshop.ui.navigation.screen.register
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,7 @@ fun RegisterScreen(
     registerViewModel: RegisterViewModel,
     onRegisterSuccess: () -> Unit
 ) {
-
+    Log.d("TAG", "RegisterScreen: recompose")
     val registerResult by registerViewModel.registerState.collectAsState()
     val loading by registerViewModel.loadingState.collectAsState()
 
@@ -48,8 +49,7 @@ fun RegisterScreen(
         onRegisterSuccess()
     } else {
         if (registerResult?.isNotBlank() == true) {
-            TODO()
-//            Toast.makeText(LocalContext.current, "Error: $registerResult", Toast.LENGTH_SHORT).show()
+            //TODO("Show error message")
         }
     }
 

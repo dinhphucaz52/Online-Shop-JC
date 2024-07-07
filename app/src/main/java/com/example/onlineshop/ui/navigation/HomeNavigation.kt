@@ -16,20 +16,26 @@ import com.example.onlineshop.ui.navigation.screen.home.HomeViewModel
 @Composable
 fun HomeNavigation() {
     val navController = rememberNavController()
+
+    var curFoodList: List<Food> = emptyList()
+
     NavHost(navController = navController, startDestination = "home") {
         var curFood: Food? = null
         composable("home")
         {
             val homeViewModel: HomeViewModel = viewModel()
             homeViewModel.setRepository(HomeRepositoryImpl())
-            HomeScreen(homeViewModel) { food ->
+            HomeScreen(homeViewModel) { food, foodList ->
                 curFood = food
+                if (foodList != null) {
+                    curFoodList = foodList
+                }
                 navController.navigate("detail")
             }
         }
         composable("detail") {
             val foodViewModel: FoodViewModel = viewModel()
-            DetailScreen(food = curFood, viewModel = foodViewModel)
+            curFood?.let { it1 -> DetailScreen(food = it1, viewModel = foodViewModel, curFoodList) }
         }
     }
 }

@@ -6,7 +6,6 @@ import com.example.onlineshop.data.remote.ApiService
 import com.example.onlineshop.data.remote.RetrofitClient
 import com.example.onlineshop.domain.repository.HomeRepository
 import com.example.onlineshop.utils.AppResource
-import com.example.onlineshop.utils.OnListenResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,7 +33,7 @@ class HomeRepositoryImpl : HomeRepository {
                             continuation.resume(AppResource.Error("Empty response body"))
                         }
                     } else {
-                        val errorMessage = response.errorBody()?.string()
+                        val errorMessage = response.message()
                         continuation.resume(AppResource.Error(errorMessage ?: "Unknown error"))
                     }
                 }

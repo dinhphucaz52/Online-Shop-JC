@@ -20,4 +20,14 @@ data class Food(
         quantity = foodDTO.quantity,
         gallery = foodDTO.gallery,
     )
+
+    constructor() : this("", "", "", 0, "", 0, emptyList())
+
+    fun getAllImg(): List<String> {
+        val list = mutableListOf<String>()
+        list.add(img)
+        list.addAll(gallery)
+        return list
+    }
+
 }
